@@ -118,11 +118,11 @@ std::string CheckForUpdates() {
         if (chunk.memory) {
             free(chunk.memory);
         }
-        return std::string(OBFUSCATE("Failed to initialize network library for updates"));
+        return std::string((const char*)OBFUSCATE("Failed to initialize network library for updates"));
     }
 
     if (curl) {
-        std::string api_url = OBFUSCATE("https://nikumodsexe.onrender.com/api/updates");
+        std::string api_url = std::string((const char*)OBFUSCATE("https://nikumodsexe.onrender.com/api/updates"));
         curl_easy_setopt(curl, CURLOPT_URL, api_url.c_str());
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_DEFAULT_PROTOCOL, "https");
@@ -130,7 +130,7 @@ std::string CheckForUpdates() {
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
         
         struct curl_slist *headers = NULL;
-        headers = curl_slist_append(headers, OBFUSCATE("Content-Type: application/json"));
+        headers = curl_slist_append(headers, (const char*)OBFUSCATE("Content-Type: application/json"));
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
         
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
@@ -161,13 +161,13 @@ std::string CheckForUpdates() {
                         }
                     }
                 } catch (json::exception &e) {
-                    errMsg = std::string(OBFUSCATE("Update parse failed: ")) + e.what();
+                    errMsg = std::string((const char*)OBFUSCATE("Update parse failed: ")) + e.what();
                 }
             } else if (http_code != 0) {
-                errMsg = std::string(OBFUSCATE("Server returned HTTP ")) + std::to_string(http_code);
+                errMsg = std::string((const char*)OBFUSCATE("Server returned HTTP ")) + std::to_string(http_code);
             }
         } else {
-            errMsg = std::string(OBFUSCATE("Network error: ")) + curl_easy_strerror(res);
+            errMsg = std::string((const char*)OBFUSCATE("Network error: ")) + curl_easy_strerror(res);
         }
         curl_slist_free_all(headers);
     }
@@ -189,15 +189,15 @@ g_Auth = "";
 JNIEnv *env;
 jvm->AttachCurrentThread(&env, 0);
 
-auto looperClass = env->FindClass(OBFUSCATE("android/os/Looper"));
-auto prepareMethod = env->GetStaticMethodID(looperClass, OBFUSCATE("prepare"), OBFUSCATE("()V"));
+auto looperClass = env->FindClass((const char*)OBFUSCATE("android/os/Looper"));
+auto prepareMethod = env->GetStaticMethodID(looperClass, (const char*)OBFUSCATE("prepare"), (const char*)OBFUSCATE("()V"));
 env->CallStaticVoidMethod(looperClass, prepareMethod);
 
-jclass activityThreadClass = env->FindClass(OBFUSCATE("android/app/ActivityThread"));
-jfieldID sCurrentActivityThreadField = env->GetStaticFieldID(activityThreadClass, OBFUSCATE("sCurrentActivityThread"), OBFUSCATE("Landroid/app/ActivityThread;"));
+jclass activityThreadClass = env->FindClass((const char*)OBFUSCATE("android/app/ActivityThread"));
+jfieldID sCurrentActivityThreadField = env->GetStaticFieldID(activityThreadClass, (const char*)OBFUSCATE("sCurrentActivityThread"), (const char*)OBFUSCATE("Landroid/app/ActivityThread;"));
 jobject sCurrentActivityThread = env->GetStaticObjectField(activityThreadClass, sCurrentActivityThreadField);
 
-jfieldID mInitialApplicationField = env->GetFieldID(activityThreadClass, OBFUSCATE("mInitialApplication"), OBFUSCATE("Landroid/app/Application;"));
+jfieldID mInitialApplicationField = env->GetFieldID(activityThreadClass, (const char*)OBFUSCATE("mInitialApplication"), (const char*)OBFUSCATE("Landroid/app/Application;"));
 jobject mInitialApplication = env->GetObjectField(sCurrentActivityThread, mInitialApplicationField);
 
 std::string hwid = user_key;
@@ -220,11 +220,11 @@ if (!curl) {
     if (chunk.memory) {
         free(chunk.memory);
     }
-    return std::string(OBFUSCATE("Failed to initialize network library"));
+    return std::string((const char*)OBFUSCATE("Failed to initialize network library"));
 }
 
 if (curl) {
-std::string api_key = OBFUSCATE("https://nikumodsexe.onrender.com/api/verify");
+std::string api_key = std::string((const char*)OBFUSCATE("https://nikumodsexe.onrender.com/api/verify"));
 curl_easy_setopt(curl, CURLOPT_URL, (api_key.c_str()));
 curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 curl_easy_setopt(curl, CURLOPT_DEFAULT_PROTOCOL, "https");
@@ -232,14 +232,14 @@ curl_easy_setopt(curl, CURLOPT_TIMEOUT, 15L);
 curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
 
 struct curl_slist *headers = NULL;
-headers = curl_slist_append(headers, OBFUSCATE("Content-Type: application/json"));
+headers = curl_slist_append(headers, (const char*)OBFUSCATE("Content-Type: application/json"));
 
 curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
 json postData;
 postData["key"] = user_key;
 postData["deviceId"] = UUID;
-postData["game"] = OBFUSCATE("FREE FIRE");
+postData["game"] = (const char*)OBFUSCATE("FREE FIRE");
 
 std::string jsonStr = postData.dump();
 curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonStr.c_str());
@@ -256,17 +256,17 @@ curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
 if (http_code == 200) {
     try {
     json result = json::parse(chunk.memory);
-    if (result[std::string(OBFUSCATE("valid"))] == true) {
+    if (result[std::string((const char*)OBFUSCATE("valid"))] == true) {
         bValid = true;
-        g_Token = OBFUSCATE("OK");
-        g_Auth = OBFUSCATE("OK");
+        g_Token = (const char*)OBFUSCATE("OK");
+        g_Auth = (const char*)OBFUSCATE("OK");
         
         std::string updateErr = CheckForUpdates();
         if (!updateErr.empty()) {
             errMsg = updateErr;
         }
     } else {
-        errMsg = result.value(std::string(OBFUSCATE("message")), std::string(OBFUSCATE("License verification failed")));
+        errMsg = result.value(std::string((const char*)OBFUSCATE("message")), std::string((const char*)OBFUSCATE("License verification failed")));
         bValid = false;
     }
     } catch (json::exception &e) {
@@ -277,12 +277,12 @@ if (http_code == 200) {
     errMsg += "}";
     }
 } else if (http_code != 0) {
-    errMsg = std::string(OBFUSCATE("Server returned HTTP ")) + std::to_string(http_code);
+    errMsg = std::string((const char*)OBFUSCATE("Server returned HTTP ")) + std::to_string(http_code);
 } else {
-    errMsg = std::string(OBFUSCATE("No response from server"));
+    errMsg = std::string((const char*)OBFUSCATE("No response from server"));
 }
 } else {
-errMsg = std::string(OBFUSCATE("Network error: ")) + curl_easy_strerror(res);
+errMsg = std::string((const char*)OBFUSCATE("Network error: ")) + curl_easy_strerror(res);
 }
 curl_slist_free_all(headers);
 }
