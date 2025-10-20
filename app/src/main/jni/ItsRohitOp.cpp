@@ -42,8 +42,6 @@
 using json = nlohmann::json;
 time_t rng = 0;
 std::string g_Token, g_Auth;
-extern std::string g_ExpiryDate;
-extern int g_DaysRemaining;
 #include "ItSRohitOpLogin.h"
 
 struct My_Patches {
@@ -303,8 +301,8 @@ colors[ImGuiCol_Text]                  = ImVec4(0.95f, 0.95f, 0.95f, 1.00f);
             
           //io.Fonts->AddFontFromMemoryTTF((void *)BaiduZY_data, BaiduZY_size, 30.0f, NULL, io.Fonts->GetGlyphRangesChineseFull());
           io.Fonts->AddFontFromMemoryTTF(const_cast<std::uint8_t*>(itsmkop), sizeof(itsmkop), 28.f, &CustomFont);
-                  io.Fonts->AddFontFromMemoryCompressedTTF(font_awesome_data, font_awesome_size, 30.0f, &icons_config, icons_ranges);
-                  io.Fonts->AddFontFromMemoryTTF(const_cast<std::uint8_t*>(Custom), sizeof(Custom), 24.f, &CustomFont);
+		  io.Fonts->AddFontFromMemoryCompressedTTF(font_awesome_data, font_awesome_size, 30.0f, &icons_config, icons_ranges);
+		  io.Fonts->AddFontFromMemoryTTF(const_cast<std::uint8_t*>(Custom), sizeof(Custom), 24.f, &CustomFont);
          // memset(&Config, 0, sizeof(sConfig));
 //
 //
@@ -396,16 +394,16 @@ inline EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
  // Window background = black
 
     ImGuiIO &io = ImGui::GetIO();
-        //Darkness();
-        // Thiết lập màu chủ đề
-        //ImVec4* colors = ImGui::GetStyle().Colors;
+	//Darkness();
+	// Thiết lập màu chủ đề
+	//ImVec4* colors = ImGui::GetStyle().Colors;
 
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplAndroid_NewFrame(g_GlWidth, g_GlHeight);
     ImGui::NewFrame();
-        if (ImGuiOK) {
-            int touchCount = (((int (*)())(Class_Input__get_touchCount))());
+	if (ImGuiOK) {
+	    int touchCount = (((int (*)())(Class_Input__get_touchCount))());
     if (touchCount > 0) {
         UnityEngine_Touch_Fields touch = ((UnityEngine_Touch_Fields(*)(int))(Class_Input__GetTouch))(0);
         float reverseY = io.DisplaySize.y - touch.m_Position.fields.y;
@@ -427,9 +425,9 @@ inline EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
                 break;
         }
     }
-        }
-        
-        DrawESP(g_GlWidth, g_GlHeight);
+	}
+	
+	DrawESP(g_GlWidth, g_GlHeight);
 
 ImDrawList* draw = ImGui::GetBackgroundDrawList();
 
@@ -477,9 +475,9 @@ boxMin.y + ( (boxMax.y - boxMin.y) - textSize.y ) / 2.0f
 draw->AddText(NULL, 28.0f, textPos, IM_COL32(255, 255, 255, 255), topText.c_str());
 
 
-        
-        
-        
+	
+	
+	
 static bool itsmk = true;
 static bool clickInProgress = false;
 static float clickStartTime = 0;
@@ -507,55 +505,7 @@ ImGui::SetNextWindowSize(ImVec2(780, 400), ImGuiCond_Once);
     
        static bool isLogin = false;
 
-if (bHasUpdate && isLogin) {
-    ImGui::SetNextWindowSize(ImVec2(780, 400), ImGuiCond_Always);
-    ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-    ImGui::Begin(OBFUSCATE(ICON_FA_EXCLAMATION_TRIANGLE " UPDATE REQUIRED"), NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
-    
-    for (auto& update : g_Updates) {
-        ImGui::Spacing();
-        ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), ICON_FA_BELL " %s", update.title.c_str());
-        ImGui::Spacing();
-        ImGui::Separator();
-        ImGui::Spacing();
-        ImGui::TextWrapped("%s", update.message.c_str());
-        ImGui::Spacing();
-        ImGui::Separator();
-        ImGui::Spacing();
-        
-        if (ImGui::Button((std::string(ICON_FA_DOWNLOAD " ") + update.buttonText).c_str(), ImVec2(ImGui::GetContentRegionAvailWidth(), 55))) {
-            JNIEnv *env;
-            jvm->AttachCurrentThread(&env, 0);
-            
-            jclass uriClass = env->FindClass(OBFUSCATE("android/net/Uri"));
-            jmethodID parseMethod = env->GetStaticMethodID(uriClass, OBFUSCATE("parse"), OBFUSCATE("(Ljava/lang/String;)Landroid/net/Uri;"));
-            jobject uri = env->CallStaticObjectMethod(uriClass, parseMethod, env->NewStringUTF(update.linkUrl.c_str()));
-            
-            jclass intentClass = env->FindClass(OBFUSCATE("android/content/Intent"));
-            jfieldID actionViewField = env->GetStaticFieldID(intentClass, OBFUSCATE("ACTION_VIEW"), OBFUSCATE("Ljava/lang/String;"));
-            jstring actionView = (jstring)env->GetStaticObjectField(intentClass, actionViewField);
-            
-            jmethodID intentConstructor = env->GetMethodID(intentClass, OBFUSCATE("<init>"), OBFUSCATE("(Ljava/lang/String;Landroid/net/Uri;)V"));
-            jobject intent = env->NewObject(intentClass, intentConstructor, actionView, uri);
-            
-            jmethodID addFlagsMethod = env->GetMethodID(intentClass, OBFUSCATE("addFlags"), OBFUSCATE("(I)Landroid/content/Intent;"));
-            env->CallObjectMethod(intent, addFlagsMethod, 0x10000000);
-            
-            jclass activityThreadClass = env->FindClass(OBFUSCATE("android/app/ActivityThread"));
-            jmethodID currentApplicationMethod = env->GetStaticMethodID(activityThreadClass, OBFUSCATE("currentApplication"), OBFUSCATE("()Landroid/app/Application;"));
-            jobject context = env->CallStaticObjectMethod(activityThreadClass, currentApplicationMethod);
-            
-            jclass contextClass = env->FindClass(OBFUSCATE("android/content/Context"));
-            jmethodID startActivityMethod = env->GetMethodID(contextClass, OBFUSCATE("startActivity"), OBFUSCATE("(Landroid/content/Intent;)V"));
-            env->CallVoidMethod(context, startActivityMethod, intent);
-            
-            jvm->DetachCurrentThread();
-        }
-        ImGui::Spacing();
-    }
-    
-    ImGui::End();
-} else if (!isLogin) {
+if (!isLogin) {
 ImGui::Spacing();
 ImGui::Text(OBFUSCATE(ICON_FA_STAR " MOD BY EVOCHEAT  " ICON_FA_CHECK_CIRCLE));
 ImGui::Spacing();
@@ -631,7 +581,7 @@ float text_x = window_pos.x + (window_width - text_size.x) / 2.0f;
 float text_y = window_pos.y + (title_bar_height - text_size.y) / 2.0f; // ✅ perfect center
 
 draw_list->AddText(ImVec2(text_x, text_y), IM_COL32(0, 255, 0, 255), title.c_str());
-        
+	
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + title_bar_height);
     ImGui::Separator();
     
@@ -648,7 +598,7 @@ ImGui::BeginChild("LeftTabs", ImVec2(200, 0), true);
     VerticalTab("AIM",   0, &selected_tab);
     VerticalTab("ESPS",  1, &selected_tab);
     VerticalTab("CHAMS", 2, &selected_tab);
-        VerticalTab("BRUTAL", 3, &selected_tab);
+	VerticalTab("BRUTAL", 3, &selected_tab);
     VerticalTab("INFOS", 4, &selected_tab);
 }
 ImGui::EndChild();
@@ -735,24 +685,13 @@ ImGui::SetCursorScreenPos(ImVec2(image_pos.x + image_size.x + 10.0f, image_pos.y
         ImGui::Text("FREE FIRE (2019115661)");
     ImGui::Dummy(ImVec2(0.0f, 25.0f));
         ImGui::Separator();    
-ImGui::BulletText("Server Status : ");
+ImGui::BulletText("Server Status : Online");
 ImGui::SameLine();
-ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Online");
+//ImGui::TextColored(ImColor(235, 152, 52), mod_status.c_str());
 ImGui::Separator();
-if (!g_ExpiryDate.empty() && g_DaysRemaining > 0) {
-    ImGui::BulletText("Key Validity : ");
-    ImGui::SameLine();
-    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", g_ExpiryDate.c_str());
-    
-    ImGui::Indent(20.0f);
-    std::string daysInfo = "Remaining days from today - " + std::to_string(g_DaysRemaining) + " day";
-    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", daysInfo.c_str());
-    ImGui::Unindent(20.0f);
-} else {
-    ImGui::BulletText("Key Validity : ");
-    ImGui::SameLine();
-    ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Not Available");
-}
+ImGui::BulletText("Key Validity : 7 Day ");
+ImGui::SameLine();
+//ImGui::TextColored(ImColor(235, 152, 52), RohitEXP.c_str());
 break;
 }
 }
@@ -802,7 +741,7 @@ inline void StartGUI() {
     if (NULL != ptr_eglSwapBuffer) {
         DobbyHook((void *)ptr_eglSwapBuffer, (void*)hook_eglSwapBuffers, (void**)&old_eglSwapBuffers);
             LOGD("Gui Started");
-                        hack_injec();
+			hack_injec();
         }
     }
 
@@ -938,13 +877,13 @@ bool is_current_process(const char* target_name) {
 
 
 void hack_injec() {
-        while (!unityMap.isValid()) {
+	while (!unityMap.isValid()) {
         unityMap = KittyMemory::getLibraryBaseMap("libunity.so");
-                anogsMap = KittyMemory::getLibraryBaseMap("libanogs.so");
-                il2cppMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
-                
+		anogsMap = KittyMemory::getLibraryBaseMap("libanogs.so");
+		il2cppMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
+		
         sleep(6);
-        }
+	}
     
  sleep(5);
     Il2CppAttach();
@@ -955,27 +894,27 @@ void hack_injec() {
         Wallhack();
     }
 
-         
-        
-        //aim silent v2
+	 
+	
+	//aim silent v2
  DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Weapon"), OBFUSCATE("OnCalcDamageOrHealing"), 1), (void *) BLAGCMCGEJG1,(void **) &old_BLAGCMCGEJG1);
-        
-        
+	
+	
 DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("UpdateBehavior"), 2), (void *) _LateUpdate, (void **) &LateUpdate);
-        //aimsilent
-        DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("PlayerNetwork"), OBFUSCATE("TakeDamage"), 9), (void *) &hook_PlayerNetwork_TakeDamage, (void **) &orig_PlayerNetwork_TakeDamage);
+	//aimsilent
+	DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("PlayerNetwork"), OBFUSCATE("TakeDamage"), 9), (void *) &hook_PlayerNetwork_TakeDamage, (void **) &orig_PlayerNetwork_TakeDamage);
         // Speed Run
        // Speed Run
    DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("IsFoldWingGliding"), 0), (void *) _IsFoldWingGliding, (void **)& IsFoldWingGliding);
-        DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("message"), OBFUSCATE("ProtoUtil"), OBFUSCATE("MappingFromPhysXState"), 1), (void *) _LEBIPIGPEEP, (void **)& LEBIPIGPEEP);
+	DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("message"), OBFUSCATE("ProtoUtil"), OBFUSCATE("MappingFromPhysXState"), 1), (void *) _LEBIPIGPEEP, (void **)& LEBIPIGPEEP);
     // ResetGuest
     DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW"), OBFUSCATE("GameConfig") , OBFUSCATE("get_ResetGuest"), 0), (void *) ResetGuest, (void **) &_ResetGuest);
     
-         // Cam Xa
-        DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("FollowCamera"), OBFUSCATE("get_OffsetForNormal"), 0),(void *)_GetCameraHeightRateValue, (void **)&GetCameraHeightRateValue);
+	 // Cam Xa
+	DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("FollowCamera"), OBFUSCATE("get_OffsetForNormal"), 0),(void *)_GetCameraHeightRateValue, (void **)&GetCameraHeightRateValue);
     
-        
-        
+	
+	
     // Bypass
     DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.CoreModule.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("AndroidJNI"), OBFUSCATE("IsInstanceOf"), 2), (void *) &_Bypass, (void **) &Bypass);
     DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("JPPGAJBAAKK"), OBFUSCATE("IsOnlineGame"), 2), (void *) &_Bypass, (void **) &Bypass);
@@ -993,8 +932,8 @@ DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW
     DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW"), OBFUSCATE("MobileReplayManager"), OBFUSCATE("GetGameTimeMS"), 0), (void *) &_FixGame, (void **) &FixGame);
     DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW"), OBFUSCATE("CreditPunishManager"), OBFUSCATE("ShowPunishWindow"), 0), (void *) &_FixGame, (void **) &FixGame);
 
-        
-        
+	
+	
     // Bypass Esp
     DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("SceneGraphicsQuality"), OBFUSCATE("SetGraphicsQuality"), 0), (void *) _BypassESP, (void **) &BypassESP);
     DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.CoreModule.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("Screen"), OBFUSCATE("SetResolution"), 0), (void *) _BypassESP, (void **) &BypassESP);
@@ -1033,9 +972,9 @@ DobbyHook(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW
 
 // //Fix Signature AutoBan
 // MemoryPatch::createWithHex("libGGP.so", 0x2148CC, "C0 03 5F D6").Modify(); // nop
-        
+	
 MemoryPatch::createWithHex((uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW"), OBFUSCATE("GameConfig"), OBFUSCATE("get_ResetGuest"), 0), OBFUSCATE("20 00 80 D2 C0 03 5F D6")).Modify();
-        // DobbyHook((void *) (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("UpdateBehavior"), 2), (void *) hook_LateUpdate, (void **) &orig_LateUpdate);
+	// DobbyHook((void *) (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("UpdateBehavior"), 2), (void *) hook_LateUpdate, (void **) &orig_LateUpdate);
     hexPatches.Guest = MemoryPatch::createWithHex(getAbsoluteAddress("libil2cpp.so", 0x5ed140c),"20 00 80 D2 C0 03 5F D6");
    
     ImGuiOK = true;
@@ -1044,11 +983,11 @@ MemoryPatch::createWithHex((uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("Assembly-
 
 
 void hack_thread(pid_t pid) {
-        
-        StartGUI();
-        while(pid == -1){pid = get_pid_by_name("com.dts.freefireth");} 
-        remote_inject(pid);
-        writeLog(to_string(pid));
+	
+	StartGUI();
+	while(pid == -1){pid = get_pid_by_name("com.dts.freefireth");} 
+	remote_inject(pid);
+	writeLog(to_string(pid));
     
 }
 
