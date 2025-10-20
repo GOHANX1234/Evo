@@ -6,8 +6,13 @@
 
 bool bValid = false;
 bool bHasUpdate = false;
+std::string g_ExpiryDate = "";
+int g_DaysRemaining = 0;
 
 #include <curl/curl.h>
+#include <ctime>
+#include <sstream>
+#include <iomanip>
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
 #include "GHr_Ryuuka/Tools/curl/json.hpp"
@@ -99,6 +104,24 @@ jmethodID toStringMethod = env->GetMethodID(uuidClass, /*toString*/ StrEnc("2~52
 auto obj = env->CallStaticObjectMethod(uuidClass, nameUUIDFromBytesMethod, myJByteArray);
 auto str = (jstring) env->CallObjectMethod(obj, toStringMethod);
 return env->GetStringUTFChars(str, 0);
+}
+
+int CalculateDaysRemaining(const std::string& expiryDate) {
+    if (expiryDate.empty()) return 0;
+    
+    std::tm expiry_tm = {};
+    std::istringstream ss(expiryDate);
+    ss >> std::get_time(&expiry_tm, "%Y-%m-%d");
+    
+    if (ss.fail()) return 0;
+    
+    std::time_t expiry_time = std::mktime(&expiry_tm);
+    std::time_t current_time = std::time(nullptr);
+    
+    double diff_seconds = std::difftime(expiry_time, current_time);
+    int days = static_cast<int>(diff_seconds / (60 * 60 * 24));
+    
+    return days > 0 ? days : 0;
 }
 
 std::string CheckForUpdates() {
@@ -260,6 +283,12 @@ if (http_code == 200) {
         bValid = true;
         g_Token = (const char*)OBFUSCATE("OK");
         g_Auth = (const char*)OBFUSCATE("OK");
+        
+        // Parse expiry date from response
+        if (result.contains("expiry")) {
+            g_ExpiryDate = result["expiry"].get<std::string>();
+            g_DaysRemaining = CalculateDaysRemaining(g_ExpiryDate);
+        }
         
         std::string updateErr = CheckForUpdates();
         if (!updateErr.empty()) {

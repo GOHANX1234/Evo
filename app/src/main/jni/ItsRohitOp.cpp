@@ -42,6 +42,8 @@
 using json = nlohmann::json;
 time_t rng = 0;
 std::string g_Token, g_Auth;
+extern std::string g_ExpiryDate;
+extern int g_DaysRemaining;
 #include "ItSRohitOpLogin.h"
 
 struct My_Patches {
@@ -733,13 +735,24 @@ ImGui::SetCursorScreenPos(ImVec2(image_pos.x + image_size.x + 10.0f, image_pos.y
         ImGui::Text("FREE FIRE (2019115661)");
     ImGui::Dummy(ImVec2(0.0f, 25.0f));
         ImGui::Separator();    
-ImGui::BulletText("Server Status : Online");
+ImGui::BulletText("Server Status : ");
 ImGui::SameLine();
-//ImGui::TextColored(ImColor(235, 152, 52), mod_status.c_str());
+ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Online");
 ImGui::Separator();
-ImGui::BulletText("Key Validity : 7 Day ");
-ImGui::SameLine();
-//ImGui::TextColored(ImColor(235, 152, 52), RohitEXP.c_str());
+if (!g_ExpiryDate.empty() && g_DaysRemaining > 0) {
+    ImGui::BulletText("Key Validity : ");
+    ImGui::SameLine();
+    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", g_ExpiryDate.c_str());
+    
+    ImGui::Indent(20.0f);
+    std::string daysInfo = "Remaining days from today - " + std::to_string(g_DaysRemaining) + " day";
+    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", daysInfo.c_str());
+    ImGui::Unindent(20.0f);
+} else {
+    ImGui::BulletText("Key Validity : ");
+    ImGui::SameLine();
+    ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Not Available");
+}
 break;
 }
 }
